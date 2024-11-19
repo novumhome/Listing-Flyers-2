@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="Your Name">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Loan Scenario Grid</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.0.0-alpha.12/html2canvas.min.js"></script>
+
+
+    <style>
+        .container {
+            max-width: 800px;
+            width: 70%;
+            padding: 10px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .header {
+            font-weight: bold;
+            font-size: 16pt;
+            text-align: left;
+            margin-bottom: 18px;
+            grid-column: 1 / -11;
+            margin-left: 275px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 270px 1fr;
+            gap: 5px;
+            align-items: start;
+        }
+
+        .description-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding-top: 43px;
+            font-size: 10pt;
+        }
+
+        .description {
+            font-weight: normal;
+            line-height: 28px;
+            width: 250px;
+            text-align: right;
+            margin-right: 0px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            border: 2px solid black;
+        }
+
+        th, td {
+            border: 1px solid black;
+            text-align: center;
+            padding: 6px;
+            font-size: 9pt;
+            white-space: normal;
+        }
+
+        th {
+            background-color: #DCE6F1;
+            font-weight: normal;
+            padding: 5px;
+            border: 1px solid black;
+            border-bottom-width: 2px;
+        }
+
+        .table-spacing {
+            height: 5px;
+        }
+
+        .group-1 td {
+            font-weight: bold;
+        }
+
+        .adjust-up {
+            margin-top: -40px;
+            margin-bottom: 36px;
+        }
+        
+        .download-btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            text-align: center;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- Lower Rate & More Cash-to-Close Section -->
+        <h1 class="header">Lower Rate & More Cash-to-Close</h1>
+        <div class="grid-container">
+            <div class="description-column">
+                <div class="description">Loan Amount</div>
+                <div class="description">Amount Needed to Purchase</div>
+                <div class="description">Monthly Payment (P.I.T.I. and HOA)</div>
+            </div>
+            <div class="table-container">
+                <table class="group-1">
+                    <tr>
+                        {% if results.get('Conforming30DownL') %}
+                            <th>Conventional 20% Down</th>
+                        {% endif %}
+                        {% if results.get('Conforming5DownL') %}
+                            <th>Conventional 5% Down</th>
+                        {% endif %}
+                        {% if results.get('FHAL') %}
+                            <th>FHA 3.5% Down</th>
+                        {% endif %}
+                        {% if results.get('VAL') %}
+                            <th>VA 0% Down</th>
+                        {% endif %}
+                        {% if results.get('USDAL') %}
+                            <th>USDA RD 0% Down</th>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        {% if results.get('Conforming30DownL') %}
+                            <td>{{ results.get('Conforming30DownL', {}).get('loan_amount', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('Conforming5DownL') %}
+                            <td>{{ results.get('Conforming5DownL', {}).get('loan_amount', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('FHAL') %}
+                            <td>{{ results.get('FHAL', {}).get('loan_amount', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('VAL') %}
+                            <td>{{ results.get('VAL', {}).get('loan_amount', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('USDAL') %}
+                            <td>{{ results.get('USDAL', {}).get('loan_amount', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        {% if results.get('Conforming30DownL') %}
+                            <td>{{ results.get('Conforming30DownL', {}).get('amount_needed_to_purchase', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('Conforming5DownL') %}
+                            <td>{{ results.get('Conforming5DownL', {}).get('amount_needed_to_purchase', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('FHAL') %}
+                            <td>{{ results.get('FHAL', {}).get('amount_needed_to_purchase', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('VAL') %}
+                            <td>{{ results.get('VAL', {}).get('amount_needed_to_purchase', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('USDAL') %}
+                            <td>{{ results.get('USDAL', {}).get('amount_needed_to_purchase', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        {% if results.get('Conforming30DownL') %}
+                            <td>{{ results.get('Conforming30DownL', {}).get('total_payment', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('Conforming5DownL') %}
+                            <td>{{ results.get('Conforming5DownL', {}).get('total_payment', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('FHAL') %}
+                            <td>{{ results.get('FHAL', {}).get('total_payment', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('VAL') %}
+                            <td>{{ results.get('VAL', {}).get('total_payment', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('USDAL') %}
+                            <td>{{ results.get('USDAL', {}).get('total_payment', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="table-spacing"></div>
+
+        <!-- Add the remaining rows for Interest Rate, APR, and Points -->
+        <div class="grid-container">
+            <div class="description-column">
+                <div class="description adjust-up">Interest Rate</div>
+                <div class="description adjust-up">APR</div>
+                <div class="description adjust-up">Points</div>
+            </div>
+            <table class="group-2">
+                <tr>
+                    {% if results.get('Conforming30DownL') %}
+                        <td>{{ results.get('Conforming30DownL', {}).get('interest_rate', 'No Data') }}%</td>
+                    {% endif %}
+                    {% if results.get('Conforming5DownL') %}
+                        <td>{{ results.get('Conforming5DownL', {}).get('interest_rate', 'No Data') }}%</td>
+                    {% endif %}
+                    {% if results.get('FHAL') %}
+                        <td>{{ results.get('FHAL', {}).get('interest_rate', 'No Data') }}%</td>
+                    {% endif %}
+                    {% if results.get('VAL') %}
+                        <td>{{ results.get('VAL', {}).get('interest_rate', 'No Data') }}%</td>
+                    {% endif %}
+                    {% if results.get('USDAL') %}
+                        <td>{{ results.get('USDAL', {}).get('interest_rate', 'No Data') | float | round(3) }}%</td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    {% if results.get('Conforming30DownL') %}
+                        <td>{{ results.get('Conforming30DownL', {}).get('apr', 'No Data') | float | round(3) }}%</td>
+                    {% endif %}
+                    {% if results.get('Conforming5DownL') %}
+                        <td>{{ results.get('Conforming5DownL', {}).get('apr', 'No Data') | float | round(3) }}%</td>
+                    {% endif %}
+                    {% if results.get('FHAL') %}
+                        <td>{{ results.get('FHAL', {}).get('apr', 'No Data') | float | round(3) }}%</td>
+                    {% endif %}
+                    {% if results.get('VAL') %}
+                        <td>{{ results.get('VAL', {}).get('apr', 'No Data') | float | round(3) }}%</td>
+                    {% endif %}
+                    {% if results.get('USDAL') %}
+                        <td>{{ results.get('USDAL', {}).get('apr', 'No Data') | float | round(3)}}%</td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    {% if results.get('Conforming30DownL') %}
+                        <td>{{ results.get('Conforming30DownL', {}).get('discount_points_percent', 'No Data') }}%</td>
+                    {% endif %}
+                    {% if results.get('Conforming5DownL') %}
+                        <td>{{ results.get('Conforming5DownL', {}).get('discount_points_percent', 'No Data') }}%</td>
+                    {% endif %}
+                    {% if results.get('FHAL') %}
+                        <td>{{ results.get('FHAL', {}).get('discount_points_percent', 'No Data') }}%</td>
+                    {% endif %}
+                    {% if results.get('VAL') %}
+                        <td>{{ results.get('VAL', {}).get('discount_points_percent', 'No Data') }}%</td>
+                    {% endif %}
+                    {% if results.get('USDAL') %}
+                        <td>{{ results.get('USDAL', {}).get('discount_points_percent', 'No Data') }}%</td>
+                    {% endif %}
+                </tr>
+            </table>
+        </div>
+
+        <!-- Higher Rate & Less Cash-to-Close Section -->
+        <h1 class="header">Higher Rate & Less Cash-to-Close</h1>
+        <div class="grid-container">
+            <div class="description-column">
+                <div class="description">Loan Amount</div>
+                <div class="description">Amount Needed to Purchase</div>
+                <div class="description">Monthly Payment (P.I.T.I. and HOA)</div>
+            </div>
+            <div class="table-container">
+                <table class="group-1">
+                    <tr>
+                        {% if results.get('Conforming30DownH') %}
+                            <th>Conventional 20% Down</th>
+                        {% endif %}
+                        {% if results.get('Conforming5DownH') %}
+                            <th>Conventional 5% Down</th>
+                        {% endif %}
+                        {% if results.get('FHAH') %}
+                            <th>FHA 3.5% Down</th>
+                        {% endif %}
+                        {% if results.get('VAH') %}
+                            <th>VA 0% Down</th>
+                        {% endif %}
+                        {% if results.get('USDAH') %}
+                            <th>USDA RD 0% Down</th>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        {% if results.get('Conforming30DownH') %}
+                            <td>{{ results.get('Conforming30DownH', {}).get('loan_amount', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('Conforming5DownH') %}
+                            <td>{{ results.get('Conforming5DownH', {}).get('loan_amount', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('FHAH') %}
+                            <td>{{ results.get('FHAH', {}).get('loan_amount', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('VAH') %}
+                            <td>{{ results.get('VAH', {}).get('loan_amount', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('USDAH') %}
+                            <td>{{ results.get('USDAH', {}).get('loan_amount', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        {% if results.get('Conforming30DownH') %}
+                            <td>{{ results.get('Conforming30DownH', {}).get('amount_needed_to_purchase', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('Conforming5DownH') %}
+                            <td>{{ results.get('Conforming5DownH', {}).get('amount_needed_to_purchase', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('FHAH') %}
+                            <td>{{ results.get('FHAH', {}).get('amount_needed_to_purchase', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('VAH') %}
+                            <td>{{ results.get('VAH', {}).get('amount_needed_to_purchase', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('USDAH') %}
+                            <td>{{ results.get('USDAH', {}).get('amount_needed_to_purchase', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        {% if results.get('Conforming30DownH') %}
+                            <td>{{ results.get('Conforming30DownH', {}).get('total_payment', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('Conforming5DownH') %}
+                            <td>{{ results.get('Conforming5DownH', {}).get('total_payment', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('FHAH') %}
+                            <td>{{ results.get('FHAH', {}).get('total_payment', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('VAH') %}
+                            <td>{{ results.get('VAH', {}).get('total_payment', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                        {% if results.get('USDAH') %}
+                            <td>{{ results.get('USDAH', {}).get('total_payment', 'No Data') | format_currency }}</td>
+                        {% endif %}
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="table-spacing"></div>
+
+        <!-- Add the remaining rows for Interest Rate, APR, and Points -->
+        <div class="grid-container">
+            <div class="description-column">
+                <div class="description adjust-up">Interest Rate</div>
+                <div class="description adjust-up">APR</div>
+                <div class="description adjust-up">Points</div>
+            </div>
+            <table class="group-2">
+                <tr>
+                    {% if results.get('Conforming30DownH') %}
+                        <td>{{ results.get('Conforming30DownH', {}).get('interest_rate', 'No Data') }}%</td>
+                    {% endif %}
+                    {% if results.get('Conforming5DownH') %}
+                        <td>{{ results.get('Conforming5DownH', {}).get('interest_rate', 'No Data') }}%</td>
+                    {% endif %}
+                    {% if results.get('FHAH') %}
+                        <td>{{ results.get('FHAH', {}).get('interest_rate', 'No Data') }}%</td>
+                    {% endif %}
+                    {% if results.get('VAH') %}
+                        <td>{{ results.get('VAH', {}).get('interest_rate', 'No Data') }}%</td>
+                    {% endif %}
+                    {% if results.get('USDAH') %}
+                        <td>{{ results.get('USDAH', {}).get('interest_rate', 'No Data') }}%</td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    {% if results.get('Conforming30DownH') %}
+                        <td>{{ results.get('Conforming30DownH', {}).get('apr', 'No Data') | float | round(3) }}%</td>
+                    {% endif %}
+                    {% if results.get('Conforming5DownH') %}
+                        <td>{{ results.get('Conforming5DownH', {}).get('apr', 'No Data') | float | round(3) }}%</td>
+                    {% endif %}
+                    {% if results.get('FHAH') %}
+                        <td>{{ results.get('FHAH', {}).get('apr', 'No Data') | float | round(3) }}%</td>
+                    {% endif %}
+                    {% if results.get('VAH') %}
+                        <td>{{ results.get('VAH', {}).get('apr', 'No Data') | float | round(3) }}%</td>
+                    {% endif %}
+                    {% if results.get('USDAH') %}
+                        <td>{{ results.get('USDAH', {}).get('apr', 'No Data') | float | round(3) }}%</td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    {% if results.get('Conforming30DownH') %}
+                        <td>{{ results.get('Conforming30DownH', {}).get('discount_points_percent', 'No Data') }}%</td>
+                    {% endif %}
+                    {% if results.get('Conforming5DownH') %}
+                        <td>{{ results.get('Conforming5DownH', {}).get('discount_points_percent', 'No Data') }}%</td>
+                    {% endif %}
+                    {% if results.get('FHAH') %}
+                        <td>{{ results.get('FHAH', {}).get('discount_points_percent', 'No Data') }}%</td>
+                    {% endif %}
+                    {% if results.get('VAH') %}
+                        <td>{{ results.get('VAH', {}).get('discount_points_percent', 'No Data') }}%</td>
+                    {% endif %}
+                    {% if results.get('USDAH') %}
+                        <td>{{ results.get('USDAH', {}).get('discount_points_percent', 'No Data') }}%</td>
+                    {% endif %}
+                </tr>
+            </table>
+        </div>
+
+        
+    </div>
+
+</body>
+</html>

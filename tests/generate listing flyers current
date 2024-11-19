@@ -1,0 +1,116 @@
+DECLARE
+    v_scenario_id INTEGER;
+    v_total_loan_amount NUMERIC;
+    v_amount_needed_to_purchase NUMERIC;
+    v_total_payment NUMERIC;
+    v_interest_rate NUMERIC;
+    v_discount_points_percent NUMERIC;
+    v_apr NUMERIC;
+    v_loan_program_code TEXT;
+    loan_amount NUMERIC;
+    total_cost NUMERIC;
+    annual_pmi_percent NUMERIC;
+    r NUMERIC;
+    n INTEGER := 360;  -- Assuming a 30-year loan term (360 months)
+    v_credits NUMERIC;
+    v_total_due NUMERIC;
+    v_amount_due_at_closing NUMERIC;
+BEGIN
+    FOR v_scenario_id IN
+        SELECT scenario_id
+        FROM loan_scenarios
+        WHERE record_id = p_record_id
+    LOOP
+        -- Calculate and set total_loan_amount
+        SELECT ls.total_loan_amount INTO v_total_loan_amount
+        FROM loan_scenarios ls
+        WHERE ls.scenario_id = v_scenario_id;
+
+        -- Calculate total_due
+        SELECT
+            ls.purchase_price + ls.lender_charges + ls.loan_borrower_discount_points + ls.appraisal +
+            ls.appraiser_reinspection + ls.credit_reports + ls.title_services + ls.title_insurance +
+            ls.recording_fees + COALESCE(ls.ok_mortgage_tax, 0) + ls.survey + ls.pest_home_inspections +
+            COALESCE(ls.prepaid_interest, 0) + ls.up_front_mi_funding_fee + ls.homeowners_insurance_year_1 +
+            ls.property_tax_escrow + ls.home_insurance_escrow
+        INTO v_total_due
+        FROM loan_scenarios ls
+        WHERE ls.scenario_id = v_scenario_id;
+
+        -- Calculate Credits
+        SELECT
+            ls.total_loan_amount + COALESCE(ls.up_front_mi_funding_fee, 0) + ls.earnest_money + 
+            ls.appraisal + ls.pest_home_inspections + COALESCE(ls.seller_concessions, 0)
+        INTO v_credits
+        FROM loan_scenarios ls
+        WHERE ls.scenario_id = v_scenario_id;
+
+        -- Calculate amount_due_at_closing
+        v_amount_due_at_closing := v_total_due - v_credits;
+
+        -- Calculate and set amount_needed_to_purchase (updated)
+        SELECT
+            v_amount_due_at_closing + ls.earnest_money + ls.pest_home_inspections + ls.appraisal + COALESCE(ls.up_front_mi_funding_fee, 0)
+        INTO v_amount_needed_to_purchase
+        FROM loan_scenarios ls
+        WHERE ls.scenario_id = v_scenario_id;
+
+        -- Fetch and set total_payment, interest_rate, discount_points_percent, and annual_pmi_percent
+        SELECT
+            ls.total_payment,
+            ls.interest_rate,
+            ls.discount_points_percent,
+            ls.total_loan_amount,
+            ls.lender_charges + ls.loan_borrower_discount_points + ls.credit_reports + ls.title_services + COALESCE(ls.prepaid_interest, 0),
+            ls.annual_pmi_percent,
+            ls.loan_program_code
+        INTO
+            v_total_payment,
+            v_interest_rate,
+            v_discount_points_percent,
+            loan_amount,
+            total_cost,
+            annual_pmi_percent,
+            v_loan_program_code
+        FROM loan_scenarios ls
+        WHERE ls.scenario_id = v_scenario_id;
+
+        -- Ensure interest rate is correctly scaled for percentage
+        r := ((v_interest_rate / 100) + annual_pmi_percent) / 12;  -- Monthly interest rate
+
+        -- Calculate APR using the provided formula
+        v_apr := (POWER(1 + r, 12) - 1) * 100;  -- Convert to annual percentage rate and express as a percentage
+
+        -- Insert the results into the loan_scenario_results table
+        INSERT INTO loan_scenario_results (
+            scenario_id,
+            record_id,
+            loan_program_code,
+            total_loan_amount,
+            amount_needed_to_purchase,
+            total_payment,
+            interest_rate,
+            discount_points_percent,
+            apr
+        ) VALUES (
+            v_scenario_id,
+            p_record_id,
+            v_loan_program_code,
+            v_total_loan_amount,
+            v_amount_needed_to_purchase,
+            v_total_payment,
+            v_interest_rate,
+            v_discount_points_percent,
+            v_apr
+        )
+        ON CONFLICT (scenario_id) 
+        DO UPDATE SET
+            loan_program_code = EXCLUDED.loan_program_code,
+            total_loan_amount = EXCLUDED.total_loan_amount,
+            amount_needed_to_purchase = EXCLUDED.amount_needed_to_purchase,
+            total_payment = EXCLUDED.total_payment,
+            interest_rate = EXCLUDED.interest_rate,
+            discount_points_percent = EXCLUDED.discount_points_percent,
+            apr = EXCLUDED.apr;
+    END LOOP;
+END;
